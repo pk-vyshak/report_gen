@@ -1,0 +1,90 @@
+domain_report:
+  # Maps internal field names to raw Excel column headers
+  column_map:
+    advertiser_name: "Advertisers Advertiser Name"
+    campaign_id: "Campaigns Campaign ID"
+    campaign_start: "Campaigns Campaign Start Date"
+    campaign_end: "Campaigns Campaign End Date"
+    campaign_budget: "Campaigns Campaign Budget"
+    creative_size: "Creatives Creative Size"
+    creative_name: "Creatives Creative Name"
+    flight_end: "Line Items Flight End Date"
+    flight_name: "Line Items Flight Name"
+    flight_start: "Line Items Flight Start Date"
+    line_item_budget_type: "Line Items Line Item Budget Type"
+    line_item_daily_budget: "Line Items Line Item Daily Budget"
+    line_item_end: "Line Items Line Item End Date"
+    line_item_name: "Line Items Line Item Name"
+    line_item_id: "Line Items Line Item ID"
+    flight_id: "Line Items Flight ID"
+    line_item_start: "Line Items Line Item Start Date"
+    creative_id: "Creatives Creative ID"
+    report_day: "Domain Report Day"
+    day_of_week: "Domain Report Day of Week"
+    month: "Domain Report Month"
+    week: "Domain Report Week"
+    year: "Domain Report Year"
+    inventory_source: "Domain Report Inventory Source"
+    platform_device_type: "Domain Report Platform Device Type"
+    domain: "Domain Report Domain"
+    cpm: "Domain Report CPM"
+    impressions: "Domain Report Impressions"
+    clicks: "Domain Report Clicks"
+    ctr: "Domain Report CTR"
+    spend: "Domain Report Spend"
+    frequency: "Domain Report Frequency"
+    reach: "Domain Report Reach"
+    video_complete_pct: "Domain Report Video Complete Percent"
+    video_completes: "Domain Report Video Completes"
+    viewability_pct: "Domain Report Viewability %"
+    viewable_impressions: "Domain Report Viewable Impressions"
+
+  # Column type classifications for cleaning
+  currency_columns:
+    - campaign_budget
+    - line_item_daily_budget
+    - spend
+    - cpm
+
+  percentage_columns:
+    - ctr
+    - video_complete_pct
+    - viewability_pct
+
+  date_columns:
+    - campaign_start
+    - campaign_end
+    - line_item_end
+    - line_item_start
+    - report_day
+
+  date_only_columns:
+    - week
+
+  integer_columns:
+    - campaign_id
+    - line_item_id
+    - creative_id
+    - flight_id
+    - impressions
+    - clicks
+    - video_completes
+    - viewable_impressions
+    - reach
+    - frequency
+    - year
+
+  # Fields that can be null/empty (lenient validation)
+  optional_columns:
+    - video_complete_pct
+    - flight_end
+    - flight_name
+    - flight_start
+
+  # Required fields (fail validation if missing)
+  required_columns:
+    - advertiser_name
+    - campaign_id
+    - impressions
+    - clicks
+    - report_day

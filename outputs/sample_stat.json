@@ -1,0 +1,436 @@
+{
+    "meta": {
+        "generated_at": "2026-01-14T17:55:05.518840",
+        "campaign_id": 4512,
+        "date_range": {
+            "start": "2025-12-01",
+            "end": "2025-12-31"
+        },
+        "total_rows": 5000
+    },
+    "aggregates": {
+        "total_impressions": 91726,
+        "total_clicks": 31,
+        "total_spend": 178.09,
+        "avg_ctr": 0.0008,
+        "avg_cpm": 2.0,
+        "avg_vcr": null,
+        "avg_viewability": 0.64
+    },
+    "goal_tracking": {
+        "progress": {
+            "total": 91726,
+            "goal": 10000000,
+            "completion_pct": 0.92,
+            "is_on_track": false,
+            "projected_pct": 0.92
+        },
+        "delivery_pattern": {
+            "is_back_loaded": false,
+            "last_quarter_pct": 10.64,
+            "trend": "stable"
+        }
+    },
+    "temporal": {
+        "weekly": [
+            {
+                "week": "2025-12-01",
+                "impressions": 24657,
+                "clicks": 7,
+                "spend": 47.92,
+                "ctr": 0.0005,
+                "cpm": 2.0
+            },
+            {
+                "week": "2025-12-08",
+                "impressions": 22629,
+                "clicks": 5,
+                "spend": 43.48,
+                "ctr": 0.0011,
+                "cpm": 2.0
+            },
+            {
+                "week": "2025-12-15",
+                "impressions": 32605,
+                "clicks": 13,
+                "spend": 64.12,
+                "ctr": 0.0014,
+                "cpm": 2.0
+            },
+            {
+                "week": "2025-12-22",
+                "impressions": 11460,
+                "clicks": 6,
+                "spend": 22.03,
+                "ctr": 0.0,
+                "cpm": 2.0
+            },
+            {
+                "week": "2025-12-29",
+                "impressions": 375,
+                "clicks": 0,
+                "spend": 0.54,
+                "ctr": 0.0,
+                "cpm": 2.0
+            }
+        ],
+        "wow_changes": [
+            {
+                "week": "2025-12-08",
+                "metric": "total_impressions",
+                "pct_change": -8.22
+            },
+            {
+                "week": "2025-12-08",
+                "metric": "total_clicks",
+                "pct_change": -28.57
+            },
+            {
+                "week": "2025-12-08",
+                "metric": "total_spend",
+                "pct_change": -9.27
+            },
+            {
+                "week": "2025-12-08",
+                "metric": "avg_ctr",
+                "pct_change": 136.26
+            },
+            {
+                "week": "2025-12-15",
+                "metric": "total_impressions",
+                "pct_change": 44.09
+            },
+            {
+                "week": "2025-12-15",
+                "metric": "total_clicks",
+                "pct_change": 160.0
+            },
+            {
+                "week": "2025-12-15",
+                "metric": "total_spend",
+                "pct_change": 47.47
+            },
+            {
+                "week": "2025-12-15",
+                "metric": "avg_ctr",
+                "pct_change": 23.77
+            },
+            {
+                "week": "2025-12-22",
+                "metric": "total_impressions",
+                "pct_change": -64.85
+            },
+            {
+                "week": "2025-12-22",
+                "metric": "total_clicks",
+                "pct_change": -53.85
+            },
+            {
+                "week": "2025-12-22",
+                "metric": "total_spend",
+                "pct_change": -65.64
+            },
+            {
+                "week": "2025-12-22",
+                "metric": "avg_ctr",
+                "pct_change": -99.7
+            },
+            {
+                "week": "2025-12-29",
+                "metric": "total_impressions",
+                "pct_change": -96.73
+            },
+            {
+                "week": "2025-12-29",
+                "metric": "total_clicks",
+                "pct_change": -100.0
+            },
+            {
+                "week": "2025-12-29",
+                "metric": "total_spend",
+                "pct_change": -97.55
+            },
+            {
+                "week": "2025-12-29",
+                "metric": "avg_ctr",
+                "pct_change": -100.0
+            }
+        ],
+        "spikes": [
+            {
+                "week": "2025-12-08",
+                "metric": "avg_ctr",
+                "pct_change": 136.26,
+                "description": "136.3% spike"
+            },
+            {
+                "week": "2025-12-15",
+                "metric": "total_clicks",
+                "pct_change": 160.0,
+                "description": "160.0% spike"
+            },
+            {
+                "week": "2025-12-22",
+                "metric": "total_impressions",
+                "pct_change": -64.85,
+                "description": "64.9% drop"
+            },
+            {
+                "week": "2025-12-22",
+                "metric": "total_clicks",
+                "pct_change": -53.85,
+                "description": "53.8% drop"
+            },
+            {
+                "week": "2025-12-22",
+                "metric": "total_spend",
+                "pct_change": -65.64,
+                "description": "65.6% drop"
+            },
+            {
+                "week": "2025-12-22",
+                "metric": "avg_ctr",
+                "pct_change": -99.7,
+                "description": "99.7% drop"
+            },
+            {
+                "week": "2025-12-29",
+                "metric": "total_impressions",
+                "pct_change": -96.73,
+                "description": "96.7% drop"
+            },
+            {
+                "week": "2025-12-29",
+                "metric": "total_clicks",
+                "pct_change": -100.0,
+                "description": "100.0% drop"
+            },
+            {
+                "week": "2025-12-29",
+                "metric": "total_spend",
+                "pct_change": -97.55,
+                "description": "97.5% drop"
+            },
+            {
+                "week": "2025-12-29",
+                "metric": "avg_ctr",
+                "pct_change": -100.0,
+                "description": "100.0% drop"
+            }
+        ]
+    },
+    "efficiency": {
+        "top_domains": [
+            {
+                "domain": "hot97.com",
+                "avg_ctr": 1.0,
+                "avg_vcr": null,
+                "impressions": 1,
+                "weekend_lift": null
+            },
+            {
+                "domain": "m.slashdot.org",
+                "avg_ctr": 1.0,
+                "avg_vcr": null,
+                "impressions": 1,
+                "weekend_lift": null
+            },
+            {
+                "domain": "perfectgame.org",
+                "avg_ctr": 0.5,
+                "avg_vcr": null,
+                "impressions": 2,
+                "weekend_lift": null
+            },
+            {
+                "domain": "8newsnow.com",
+                "avg_ctr": 0.5,
+                "avg_vcr": null,
+                "impressions": 2,
+                "weekend_lift": null
+            },
+            {
+                "domain": "heraldodemexico.com.mx",
+                "avg_ctr": 0.1666,
+                "avg_vcr": null,
+                "impressions": 6,
+                "weekend_lift": null
+            },
+            {
+                "domain": "www.latina.pe",
+                "avg_ctr": 0.125,
+                "avg_vcr": null,
+                "impressions": 8,
+                "weekend_lift": null
+            },
+            {
+                "domain": "m.economictimes.com",
+                "avg_ctr": 0.0045,
+                "avg_vcr": null,
+                "impressions": 70,
+                "weekend_lift": -100.0
+            },
+            {
+                "domain": "kids.wordsmyth.net",
+                "avg_ctr": 0.0019,
+                "avg_vcr": null,
+                "impressions": 1102,
+                "weekend_lift": -100.0
+            },
+            {
+                "domain": "content.story-feeds.com",
+                "avg_ctr": 0.0009,
+                "avg_vcr": null,
+                "impressions": 4422,
+                "weekend_lift": -50.0
+            },
+            {
+                "domain": "www.breakingbourbon.com",
+                "avg_ctr": 0.0003,
+                "avg_vcr": null,
+                "impressions": 310,
+                "weekend_lift": -100.0
+            }
+        ],
+        "bottom_domains": [
+            {
+                "domain": "darksouls2.wiki.fextralife.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 6,
+                "weekend_lift": null
+            },
+            {
+                "domain": "hollowknightsilksong.wiki.fextralife.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 57,
+                "weekend_lift": null
+            },
+            {
+                "domain": "www.mlive.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 7,
+                "weekend_lift": null
+            },
+            {
+                "domain": "www.supergoldenbakes.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 2,
+                "weekend_lift": null
+            },
+            {
+                "domain": "howtopronounce.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 1,
+                "weekend_lift": null
+            },
+            {
+                "domain": "www.ouest-france.fr",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 1,
+                "weekend_lift": null
+            },
+            {
+                "domain": "consciousfood.wordpress.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 1,
+                "weekend_lift": null
+            },
+            {
+                "domain": "www.momjunction.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 61,
+                "weekend_lift": null
+            },
+            {
+                "domain": "hosmanek.wordpress.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 65,
+                "weekend_lift": null
+            },
+            {
+                "domain": "civicxi.com",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 6,
+                "weekend_lift": null
+            }
+        ],
+        "platforms": [
+            {
+                "platform": "CONNECTED_DEVICE",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 1,
+                "spend": 0.0
+            },
+            {
+                "platform": "TABLET",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 4672,
+                "spend": 9.0
+            },
+            {
+                "platform": "MOBILE",
+                "avg_ctr": 0.0012,
+                "avg_vcr": null,
+                "impressions": 59275,
+                "spend": 115.2
+            },
+            {
+                "platform": "PC",
+                "avg_ctr": 0.0004,
+                "avg_vcr": null,
+                "impressions": 27763,
+                "spend": 53.87
+            },
+            {
+                "platform": "UNKNOWN",
+                "avg_ctr": 0.0,
+                "avg_vcr": null,
+                "impressions": 15,
+                "spend": 0.02
+            }
+        ],
+        "gaps": [
+            {
+                "metric": "avg_ctr",
+                "max_platform": "MOBILE",
+                "max_value": 1.1508019639934536e-05,
+                "min_platform": "CONNECTED_DEVICE",
+                "min_value": 0.0,
+                "gap_pct": 100.0
+            },
+            {
+                "metric": "total_impressions",
+                "max_platform": "MOBILE",
+                "max_value": 59275,
+                "min_platform": "CONNECTED_DEVICE",
+                "min_value": 1,
+                "gap_pct": 100.0
+            }
+        ],
+        "weekend_lift": {
+            "lift": 12.89,
+            "ctr_vcr_correlation": null
+        }
+    },
+    "anomalies": [],
+    "correlations": {
+        "ctr_vcr": null,
+        "ctr_viewability": -0.0151
+    },
+    "normalized": {
+        "ctr_vs_avg_mean": -0.0,
+        "vcr_percentile_median": null
+    }
+}

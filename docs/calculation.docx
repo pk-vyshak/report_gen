@@ -1,0 +1,125 @@
+Look, if you want to move from "data janitor" to "architect," you need to stop looking at these as just columns and start looking at them as **relational performance indicators.** To replicate that "Post Campaign Insights" document, your system needs to perform calculations at three levels: **Aggregates, Temporal Trends, and Efficiency Ratios.**
+
+Here are the formulas you need to bake into your analytical engine.
+
+---
+
+### 1. Primary Performance Aggregates
+
+These are your "Top-Line" metrics that appear in the first tab of the report.
+
+| Metric | Formula | Contextual Note |
+| --- | --- | --- |
+| **Delivery Goal Completion %** |  | The sample shows a  completion.
+
+ |
+| **Click-Through Rate (CTR)** |  | Overall campaign average was .
+
+ |
+| **Video Completion Rate (VCR)** |  | Overall average was .
+
+ |
+| **Viewability %** |  | Maintained a consistent average of .
+
+ |
+
+---
+
+### 2. Temporal & Trend Calculations
+
+This is where the "Insights" actually come from. You aren't just calculating numbers; you're calculating **variance**.
+
+* **Week-over-Week (WoW) Change:** 
+
+* 
+*Usage:* This identifies the "dramatic 74.8% spike" in Week 4 impressions.
+
+
+
+
+* **Metric Anomaly Detection (Deviation from Mean):**
+
+
+* 
+*Usage:* This flags the Week 3 CTR as being "45% below campaign average".
+
+
+
+
+* **Weekend vs. Weekday Lift:**
+
+
+* 
+*Usage:* Used to prove the "7.6% higher engagement" on weekends.
+
+
+
+
+
+---
+
+### 3. Inventory & Domain Efficiency Ratios
+
+To generate the "Inventory Pulse" (3rd Tab), your code needs to cross-reference the Domain Report with performance thresholds.
+
+* **The "Inverse Relationship" Score:** Calculate the correlation between CTR and VCR across domains.
+* 
+*Insight:* High CTR () often correlates with lower VCR ().
+
+
+
+
+* **Platform Performance Gap:**
+
+
+* 
+*Insight:* Found a performance gap of over  between the best and worst device-platform combinations.
+
+
+
+
+* **Efficiency Thresholding:** Flag domains/apps where .
+* 
+*Recommendation:* These "rarely deliver meaningful campaign impact" and should be eliminated.
+
+
+
+
+
+---
+
+### 4. Logic for the "Automated Recommendations"
+
+You can't just hard-code text. Use "If-Then" logical triggers based on your calculations:
+
+* **Trigger:** If  by .
+* 
+**Insight:** "Weekend days show significantly higher engagement rates".
+
+
+* 
+**Recommendation:** "Increase weekend impression allocation by 15-20%".
+
+
+
+
+* **Trigger:** If  spike but  drops.
+* 
+**Insight:** "Suggests a potential quality-quantity trade-off".
+
+
+
+
+* **Trigger:** If  variance is .
+* 
+**Insight:** "Indicates consistently premium ad placements".
+
+
+
+
+
+### The Developer's "Scalability" Tip:
+
+When you build the dataframe, create a **Normalized Metric Layer**. Don't just store `Impressions`. Store `Impressions_WoW_Delta`, `CTR_vs_Avg`, and `VCR_Percentile`. This makes it trivial for your Document Generator to say "This metric is  higher than last week" without doing math inside the UI logic.
+
+**Would you like me to show you the Python logic for the "Inverse Relationship" trigger that flags high-click/low-completion inventory?**
