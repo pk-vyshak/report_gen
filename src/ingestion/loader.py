@@ -5,12 +5,19 @@ from typing import Any
 
 import polars as pl
 import yaml
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 from ..exceptions import ColumnMappingError, DataValidationError, SchemaLoadError
+from ..models.campaign_report import CampaignReportRow
 from ..models.domain_report import DomainReportRow
 from .cleaner import apply_cleaning
 from .enricher import enrich
+
+# Map schema names to validation models
+SCHEMA_MODELS: dict[str, type[BaseModel]] = {
+    "domain_report": DomainReportRow,
+    "campaign_report": CampaignReportRow,
+}
 
 
 class DataIngestionPipeline:
@@ -51,7 +58,7 @@ class DataIngestionPipeline:
         schema = self.schema[schema_name]
 
         # Load raw data
-        df = self._load(file_path)
+        df = self._load(file_path, schema_name)
 
         # Rename columns to internal names
         df = self._rename_columns(df, schema["column_map"])
@@ -64,22 +71,33 @@ class DataIngestionPipeline:
 
         # Validate against Pydantic model
         if validate:
-            self._validate(df)
+            self._validate(df, schema_name)
 
         return df
 
-    def _load(self, path: Path) -> pl.DataFrame:
+    def _load(self, path: Path, schema_name: str = "domain_report") -> pl.DataFrame:
         """Load data from Excel or CSV."""
         suffix = path.suffix.lower()
         if suffix in (".xlsx", ".xls"):
-            # Provide schema overrides for columns that can't be inferred
-            # (typically empty or sparse columns in Excel files)
-            schema_overrides = {
-                "Line Items Flight End Date": pl.String,
-                "Line Items Flight Name": pl.String,
-                "Line Items Flight Start Date": pl.String,
-                "Domain Report Video Complete Percent": pl.String,
-            }
+            # Build schema overrides based on report type
+            # These are columns that may be empty/sparse and need type hints
+            if schema_name == "domain_report":
+                schema_overrides = {
+                    "Line Items Flight End Date": pl.String,
+                    "Line Items Flight Name": pl.String,
+                    "Line Items Flight Start Date": pl.String,
+                    "Domain Report Video Complete Percent": pl.String,
+                }
+            elif schema_name == "campaign_report":
+                schema_overrides = {
+                    "Line Items Flight End Date": pl.String,
+                    "Line Items Flight Name": pl.String,
+                    "Line Items Flight Start Date": pl.String,
+                    "Line Items Flight Budget": pl.String,
+                    "Performance Report Video Complete Percent": pl.String,
+                }
+            else:
+                schema_overrides = {}
             return pl.read_excel(path, schema_overrides=schema_overrides)
         elif suffix == ".csv":
             return pl.read_csv(path)
@@ -122,19 +140,24 @@ class DataIngestionPipeline:
             datetime_cols=schema.get("date_columns", []),
             date_cols=schema.get("date_only_columns", []),
             integer_cols=schema.get("integer_columns", []),
+            float_cols=schema.get("float_columns", []),
         )
 
-    def _validate(self, df: pl.DataFrame) -> None:
+    def _validate(self, df: pl.DataFrame, schema_name: str) -> None:
         """Validate each row against Pydantic model.
 
         Collects all errors before raising, for better debugging.
         """
+        model = SCHEMA_MODELS.get(schema_name)
+        if model is None:
+            raise ValueError(f"No validation model for schema: {schema_name}")
+
         errors: list[dict[str, Any]] = []
         rows = df.to_dicts()
 
         for i, row in enumerate(rows):
             try:
-                DomainReportRow.model_validate(row)
+                model.model_validate(row)
             except ValidationError as e:
                 errors.append({"row": i, "errors": e.errors()})
 

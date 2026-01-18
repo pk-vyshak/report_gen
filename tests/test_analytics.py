@@ -65,7 +65,9 @@ def sample_df() -> pl.DataFrame:
             "is_weekend": [False, False, False, False, False, False, False],
             "campaign_end": [date(2024, 1, 31)] * 7,
             "video_complete_pct": [0.80, 0.85, 0.82, 0.88, 0.81, 0.87, 0.90],
+            "video_completes": [800, 1020, 1640, 2200, 2430, 3045, 7200],
             "viewability_pct": [0.99, 0.98, 0.99, 0.97, 0.99, 0.98, 0.99],
+            "viewable_impressions": [990, 1176, 1980, 2425, 2970, 3430, 7920],
         }
     )
 

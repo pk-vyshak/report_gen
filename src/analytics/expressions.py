@@ -9,14 +9,46 @@ import polars as pl
 
 
 def weekly_totals_expr() -> list[pl.Expr]:
-    """Expressions for weekly aggregate metrics."""
+    """Expressions for weekly aggregate metrics.
+
+    Uses weighted averages for CTR, VCR, and Viewability.
+    CTR = total_clicks / total_impressions
+    VCR = sum(vcr * impressions) / sum(impressions)
+    Viewability = sum(viewable_impressions) / sum(impressions)
+    """
     return [
         pl.col("impressions").sum().alias("total_impressions"),
         pl.col("clicks").sum().alias("total_clicks"),
         pl.col("spend").sum().alias("total_spend"),
-        pl.col("ctr").mean().alias("avg_ctr"),
-        pl.col("cpm").mean().alias("avg_cpm"),
+        pl.col("viewable_impressions").sum().alias("total_viewable_impressions"),
+        pl.col("video_completes").sum().alias("total_video_completes"),
+        # Recomputed CTR: clicks / impressions
+        (pl.col("clicks").sum() / pl.col("impressions").sum()).alias("avg_ctr"),
+        # Recomputed CPM: (spend / impressions) * 1000
+        (pl.col("spend").sum() / pl.col("impressions").sum() * 1000).alias("avg_cpm"),
+        # Weighted VCR: sum(vcr * impressions) / sum(impressions)
+        weighted_vcr_expr().alias("avg_vcr"),
+        # Viewability: sum(viewable_impressions) / sum(impressions)
+        (pl.col("viewable_impressions").sum() / pl.col("impressions").sum()).alias(
+            "avg_viewability"
+        ),
     ]
+
+
+def weighted_vcr_expr() -> pl.Expr:
+    """Weighted VCR calculation: sum(vcr_pct * impressions) / sum(impressions).
+
+    Handles null VCR values by treating them as 0 contribution.
+    """
+    return (
+        (pl.col("video_complete_pct").fill_null(0) * pl.col("impressions")).sum()
+        / pl.col("impressions").sum()
+    )
+
+
+def weighted_viewability_expr() -> pl.Expr:
+    """Viewability rollup: sum(viewable_impressions) / sum(impressions)."""
+    return pl.col("viewable_impressions").sum() / pl.col("impressions").sum()
 
 
 def wow_change_expr(metric: str) -> pl.Expr:
@@ -59,22 +91,51 @@ def spend_pct_of_total_expr(total: float) -> pl.Expr:
 
 
 def domain_aggregates_expr() -> list[pl.Expr]:
-    """Expressions for per-domain aggregates."""
+    """Expressions for per-domain aggregates with weighted metrics."""
     return [
-        pl.col("ctr").mean().alias("avg_ctr"),
-        pl.col("video_complete_pct").mean().alias("avg_vcr"),
         pl.col("impressions").sum().alias("total_impressions"),
+        pl.col("clicks").sum().alias("total_clicks"),
         pl.col("spend").sum().alias("total_spend"),
+        pl.col("viewable_impressions").sum().alias("total_viewable_impressions"),
+        # Recomputed CTR
+        (pl.col("clicks").sum() / pl.col("impressions").sum()).alias("avg_ctr"),
+        # Recomputed CPM
+        (pl.col("spend").sum() / pl.col("impressions").sum() * 1000).alias("avg_cpm"),
+        # Weighted VCR
+        weighted_vcr_expr().alias("avg_vcr"),
+        # Viewability
+        weighted_viewability_expr().alias("avg_viewability"),
     ]
 
 
 def platform_aggregates_expr() -> list[pl.Expr]:
-    """Expressions for per-platform aggregates."""
+    """Expressions for per-platform aggregates with weighted metrics."""
     return [
-        pl.col("ctr").mean().alias("avg_ctr"),
-        pl.col("video_complete_pct").mean().alias("avg_vcr"),
         pl.col("impressions").sum().alias("total_impressions"),
+        pl.col("clicks").sum().alias("total_clicks"),
         pl.col("spend").sum().alias("total_spend"),
+        pl.col("viewable_impressions").sum().alias("total_viewable_impressions"),
+        # Recomputed CTR
+        (pl.col("clicks").sum() / pl.col("impressions").sum()).alias("avg_ctr"),
+        # Recomputed CPM
+        (pl.col("spend").sum() / pl.col("impressions").sum() * 1000).alias("avg_cpm"),
+        # Weighted VCR
+        weighted_vcr_expr().alias("avg_vcr"),
+        # Viewability
+        weighted_viewability_expr().alias("avg_viewability"),
+    ]
+
+
+def day_of_week_aggregates_expr() -> list[pl.Expr]:
+    """Expressions for day-of-week aggregates with weighted metrics."""
+    return [
+        pl.col("impressions").sum().alias("total_impressions"),
+        pl.col("clicks").sum().alias("total_clicks"),
+        pl.col("spend").sum().alias("total_spend"),
+        # Recomputed CTR
+        (pl.col("clicks").sum() / pl.col("impressions").sum()).alias("avg_ctr"),
+        # Weighted VCR
+        weighted_vcr_expr().alias("avg_vcr"),
     ]
 
 
@@ -110,3 +171,40 @@ def anomaly_direction_expr(metric: str) -> pl.Expr:
     return (
         pl.when(pl.col(z_col) > 0).then(pl.lit("above")).otherwise(pl.lit("below"))
     ).alias(f"{metric}_anomaly_direction")
+
+
+# =============================================================================
+# CAMPAIGN KPI EXPRESSIONS
+# =============================================================================
+
+
+def campaign_kpi_expr() -> list[pl.Expr]:
+    """Expressions for campaign-level KPIs (recomputed from raw data).
+
+    All metrics are recomputed, not taken from Excel aggregates.
+    """
+    return [
+        pl.col("impressions").sum().alias("total_impressions"),
+        pl.col("clicks").sum().alias("total_clicks"),
+        pl.col("spend").sum().alias("total_spend"),
+        pl.col("viewable_impressions").sum().alias("total_viewable_impressions"),
+        pl.col("video_completes").sum().alias("total_video_completes"),
+        # CTR = clicks / impressions
+        (pl.col("clicks").sum() / pl.col("impressions").sum()).alias("ctr"),
+        # CPM = (spend / impressions) * 1000
+        (pl.col("spend").sum() / pl.col("impressions").sum() * 1000).alias("cpm"),
+        # Viewability = viewable_impressions / impressions
+        (pl.col("viewable_impressions").sum() / pl.col("impressions").sum()).alias(
+            "viewability_pct"
+        ),
+        # VCR = weighted average
+        (
+            (pl.col("video_complete_pct").fill_null(0) * pl.col("impressions")).sum()
+            / pl.col("impressions").sum()
+        ).alias("vcr_pct"),
+    ]
+
+
+def impression_share_expr(total_impressions: int) -> pl.Expr:
+    """Calculate impression share as percentage of total."""
+    return (pl.col("total_impressions") / total_impressions).alias("impression_share")

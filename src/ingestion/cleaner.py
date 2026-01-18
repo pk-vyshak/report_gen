@@ -96,6 +96,18 @@ def clean_string_column(col_name: str) -> pl.Expr:
     )
 
 
+def clean_float_column(col_name: str) -> pl.Expr:
+    """Convert to float, handling commas and string representation."""
+    return (
+        pl.col(col_name)
+        .cast(pl.Utf8)
+        .str.replace_all(",", "")
+        .str.strip_chars()
+        .cast(pl.Float64)
+        .alias(col_name)
+    )
+
+
 def apply_cleaning(
     df: pl.DataFrame,
     currency_cols: list[str],
@@ -103,6 +115,7 @@ def apply_cleaning(
     datetime_cols: list[str],
     date_cols: list[str],
     integer_cols: list[str],
+    float_cols: list[str] | None = None,
 ) -> pl.DataFrame:
     """Apply all cleaning transformations to DataFrame.
 
@@ -131,6 +144,10 @@ def apply_cleaning(
     for col in integer_cols:
         if col in existing_cols:
             exprs.append(clean_integer_column(col))
+
+    for col in float_cols or []:
+        if col in existing_cols:
+            exprs.append(clean_float_column(col))
 
     if exprs:
         return df.with_columns(exprs)

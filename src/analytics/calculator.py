@@ -9,8 +9,11 @@ from ..models.stat_pack import StatPack
 from .expressions import (
     anomaly_direction_expr,
     anomaly_flag_expr,
+    campaign_kpi_expr,
     ctr_vs_avg_expr,
+    day_of_week_aggregates_expr,
     domain_aggregates_expr,
+    impression_share_expr,
     platform_aggregates_expr,
     spend_pct_of_total_expr,
     vcr_percentile_expr,
@@ -22,8 +25,11 @@ from .expressions import (
 from .models import (
     Anomaly,
     AnomalyReport,
+    CampaignKPIs,
+    DayOfWeekStats,
     DeliveryPattern,
     DomainEfficiency,
+    DomainStats,
     EfficiencyMetrics,
     GoalProgress,
     PerformanceGap,
@@ -93,6 +99,8 @@ class AnalyticalEngine:
                 spend=row["total_spend"],
                 avg_ctr=row["avg_ctr"],
                 avg_cpm=row["avg_cpm"],
+                avg_vcr=row.get("avg_vcr"),
+                avg_viewability=row.get("avg_viewability"),
             )
             for row in weekly_df.to_dicts()
         ]
@@ -453,6 +461,169 @@ class AnalyticalEngine:
             threshold_used=self.backload_threshold,
             daily_trend=trend,
         )
+
+    # =========================================================================
+    # CAMPAIGN KPIs (RECOMPUTED)
+    # =========================================================================
+
+    def get_campaign_kpis(self) -> CampaignKPIs:
+        """Calculate campaign-level KPIs from raw data.
+
+        All metrics are recomputed, not taken from Excel aggregates.
+
+        Returns:
+            CampaignKPIs with impressions, clicks, spend, CTR, CPM,
+            viewability, and VCR.
+        """
+        kpis = self.df.select(campaign_kpi_expr()).to_dicts()[0]
+
+        return CampaignKPIs(
+            total_impressions=kpis["total_impressions"],
+            total_clicks=kpis["total_clicks"],
+            total_spend=kpis["total_spend"],
+            ctr=kpis["ctr"],
+            cpm=kpis["cpm"],
+            viewability_pct=kpis["viewability_pct"],
+            vcr_pct=kpis["vcr_pct"],
+        )
+
+    # =========================================================================
+    # DAY OF WEEK ANALYSIS
+    # =========================================================================
+
+    def get_dow_performance(self) -> list[DayOfWeekStats]:
+        """Calculate performance breakdown by day of week.
+
+        Returns:
+            List of DayOfWeekStats for Mon-Sun with impressions, CTR, VCR, spend.
+        """
+        dow_order = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+        ]
+
+        dow_df = self.df.group_by("day_of_week").agg(day_of_week_aggregates_expr())
+
+        # Sort by day of week order
+        dow_df = dow_df.with_columns(
+            pl.col("day_of_week")
+            .replace_strict(dow_order, list(range(7)), default=7)
+            .alias("dow_order")
+        ).sort("dow_order")
+
+        return [
+            DayOfWeekStats(
+                day_of_week=row["day_of_week"],
+                impressions=row["total_impressions"],
+                clicks=row["total_clicks"],
+                spend=row["total_spend"],
+                avg_ctr=row["avg_ctr"],
+                avg_vcr=row["avg_vcr"],
+            )
+            for row in dow_df.to_dicts()
+        ]
+
+    # =========================================================================
+    # ENHANCED DOMAIN ANALYSIS
+    # =========================================================================
+
+    def get_domain_stats(
+        self,
+        top_n: int = 10,
+        underperform_share_threshold: float = 0.05,
+        underperform_ctr_percentile: float = 0.25,
+    ) -> tuple[list[DomainStats], float]:
+        """Calculate domain stats with share and underperforming flags.
+
+        Args:
+            top_n: Number of top domains to return (default 10)
+            underperform_share_threshold: Min share to consider for underperforming
+            underperform_ctr_percentile: CTR below this percentile = underperforming
+
+        Returns:
+            Tuple of (list of DomainStats sorted by impressions, top_n_share)
+        """
+        total_impressions = self.df["impressions"].sum()
+
+        # Get domain aggregates
+        domain_df = self.df.group_by("domain").agg(domain_aggregates_expr())
+
+        # Add impression share
+        domain_df = domain_df.with_columns(
+            impression_share_expr(total_impressions)
+        )
+
+        # Calculate CTR threshold for underperforming
+        ctr_threshold = domain_df["avg_ctr"].quantile(underperform_ctr_percentile)
+
+        # Add underperforming flag
+        domain_df = domain_df.with_columns(
+            (
+                (pl.col("impression_share") >= underperform_share_threshold)
+                & (pl.col("avg_ctr") < ctr_threshold)
+            ).alias("is_underperforming")
+        )
+
+        # Sort by impressions descending
+        domain_df = domain_df.sort("total_impressions", descending=True)
+
+        # Calculate top-N share
+        top_n_df = domain_df.head(top_n)
+        top_n_share = top_n_df["total_impressions"].sum() / total_impressions
+
+        domain_stats = [
+            DomainStats(
+                domain=row["domain"],
+                impressions=row["total_impressions"],
+                clicks=row["total_clicks"],
+                spend=row["total_spend"],
+                avg_ctr=row["avg_ctr"],
+                avg_cpm=row["avg_cpm"],
+                avg_vcr=row["avg_vcr"],
+                avg_viewability=row["avg_viewability"],
+                impression_share=row["impression_share"],
+                is_underperforming=row["is_underperforming"],
+            )
+            for row in top_n_df.to_dicts()
+        ]
+
+        return domain_stats, top_n_share
+
+    def get_platform_stats(self) -> list[PlatformPerformance]:
+        """Calculate platform/device breakdown with impression share.
+
+        Returns:
+            List of PlatformPerformance with share calculations.
+        """
+        total_impressions = self.df["impressions"].sum()
+
+        platform_df = self.df.group_by("platform_device_type").agg(
+            platform_aggregates_expr()
+        )
+
+        # Add impression share
+        platform_df = platform_df.with_columns(
+            impression_share_expr(total_impressions)
+        )
+
+        # Sort by impressions descending
+        platform_df = platform_df.sort("total_impressions", descending=True)
+
+        return [
+            PlatformPerformance(
+                platform=row["platform_device_type"],
+                avg_ctr=row["avg_ctr"],
+                avg_vcr=row["avg_vcr"],
+                total_impressions=row["total_impressions"],
+                total_spend=row["total_spend"],
+            )
+            for row in platform_df.to_dicts()
+        ]
 
     # =========================================================================
     # STAT PACK (CONSOLIDATED OUTPUT)

@@ -88,3 +88,105 @@ domain_report:
     - impressions
     - clicks
     - report_day
+
+campaign_report:
+  # Maps internal field names to raw Excel column headers
+  column_map:
+    campaign_name: "Campaigns Campaign Name"
+    campaign_id: "Campaigns Campaign ID"
+    campaign_start: "Campaigns Campaign Start Date"
+    campaign_end: "Campaigns Campaign End Date"
+    campaign_budget: "Campaigns Campaign Budget"
+    creative_size: "Creatives Creative Size"
+    creative_name: "Creatives Creative Name"
+    video_duration: "Creatives Video Duration"
+    flight_budget: "Line Items Flight Budget"
+    flight_end: "Line Items Flight End Date"
+    flight_name: "Line Items Flight Name"
+    flight_start: "Line Items Flight Start Date"
+    line_item_budget: "Line Items Line Item Budget"
+    line_item_budget_type: "Line Items Line Item Budget Type"
+    line_item_daily_budget: "Line Items Line Item Daily Budget"
+    line_item_end: "Line Items Line Item End Date"
+    line_item_name: "Line Items Line Item Name"
+    line_item_id: "Line Items Line Item ID"
+    flight_id: "Line Items Flight ID"
+    line_item_start: "Line Items Line Item Start Date"
+    creative_id: "Creatives Creative ID"
+    report_day: "Performance Report Day"
+    day_of_week: "Performance Report Day of Week"
+    month: "Performance Report Month"
+    week: "Performance Report Week"
+    year: "Performance Report Year"
+    inventory_source: "Performance Report Inventory Source"
+    platform_device_type: "Performance Report Platform Device Type"
+    cpm: "Performance Report CPM"
+    impressions: "Performance Report Impressions"
+    clicks: "Performance Report Clicks"
+    ctr: "Performance Report CTR"
+    spend: "Performance Report Spend"
+    frequency: "Performance Report Frequency"
+    reach: "Performance Report Reach"
+    video_complete_pct: "Performance Report Video Complete Percent"
+    video_completes: "Performance Report Video Completes"
+    viewability_pct: "Performance Report Viewability %"
+    viewable_impressions: "Performance Report Viewable Impressions"
+
+  # Column type classifications for cleaning
+  currency_columns:
+    - campaign_budget
+    - flight_budget
+    - line_item_budget
+    - line_item_daily_budget
+    - spend
+    - cpm
+
+  percentage_columns:
+    - ctr
+    - video_complete_pct
+    - viewability_pct
+
+  date_columns:
+    - campaign_start
+    - campaign_end
+    - flight_end
+    - flight_start
+    - line_item_end
+    - line_item_start
+    - report_day
+
+  date_only_columns:
+    - week
+
+  integer_columns:
+    - campaign_id
+    - line_item_id
+    - creative_id
+    - flight_id
+    - video_duration
+    - impressions
+    - clicks
+    - video_completes
+    - viewable_impressions
+    - reach
+    - year
+
+  float_columns:
+    - frequency
+
+  # Fields that can be null/empty (lenient validation)
+  optional_columns:
+    - video_complete_pct
+    - flight_budget
+    - flight_end
+    - flight_name
+    - flight_start
+    - video_duration
+
+  # Required fields (fail validation if missing)
+  required_columns:
+    - campaign_name
+    - campaign_id
+    - impressions
+    - clicks
+    - report_day
