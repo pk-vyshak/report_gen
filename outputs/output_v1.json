@@ -1,0 +1,272 @@
+{
+    "campaign_id": 4512,
+    "kpis": {
+        "total_impressions": 91726,
+        "total_clicks": 31,
+        "total_spend": 178.09,
+        "ctr_pct": 0.0338,
+        "cpm": 1.94,
+        "viewability_pct": 66.26,
+        "vcr_pct": null
+    },
+    "weekly_performance": [
+        {
+            "week": "2025-12-01",
+            "impressions": 24657,
+            "clicks": 7,
+            "spend": 47.92,
+            "ctr": 0.0284,
+            "cpm": 1.94,
+            "vcr": null,
+            "viewability": 65.26
+        },
+        {
+            "week": "2025-12-08",
+            "impressions": 22629,
+            "clicks": 5,
+            "spend": 43.48,
+            "ctr": 0.0221,
+            "cpm": 1.92,
+            "vcr": null,
+            "viewability": 63.12
+        },
+        {
+            "week": "2025-12-15",
+            "impressions": 32605,
+            "clicks": 13,
+            "spend": 64.12,
+            "ctr": 0.0399,
+            "cpm": 1.97,
+            "vcr": null,
+            "viewability": 67.35
+        },
+        {
+            "week": "2025-12-22",
+            "impressions": 11460,
+            "clicks": 6,
+            "spend": 22.03,
+            "ctr": 0.0524,
+            "cpm": 1.92,
+            "vcr": null,
+            "viewability": 71.61
+        },
+        {
+            "week": "2025-12-29",
+            "impressions": 375,
+            "clicks": 0,
+            "spend": 0.54,
+            "ctr": null,
+            "cpm": 1.44,
+            "vcr": null,
+            "viewability": 62.67
+        }
+    ],
+    "platform_breakdown": [
+        {
+            "platform": "MOBILE",
+            "impressions": 59275,
+            "impression_share": 64.62,
+            "spend": 115.2,
+            "ctr": 0.0456,
+            "vcr": null,
+            "cpm": 1.94
+        },
+        {
+            "platform": "PC",
+            "impressions": 27763,
+            "impression_share": 30.27,
+            "spend": 53.87,
+            "ctr": 0.0144,
+            "vcr": null,
+            "cpm": 1.94
+        },
+        {
+            "platform": "TABLET",
+            "impressions": 4672,
+            "impression_share": 5.09,
+            "spend": 9.0,
+            "ctr": null,
+            "vcr": null,
+            "cpm": 1.93
+        },
+        {
+            "platform": "UNKNOWN",
+            "impressions": 15,
+            "impression_share": 0.02,
+            "spend": 0.02,
+            "ctr": null,
+            "vcr": null,
+            "cpm": 1.33
+        },
+        {
+            "platform": "CONNECTED_DEVICE",
+            "impressions": 1,
+            "impression_share": 0.0,
+            "spend": 0.0,
+            "ctr": null,
+            "vcr": null,
+            "cpm": 0.0
+        }
+    ],
+    "day_of_week_performance": [
+        {
+            "day": "Monday",
+            "impressions": 17110,
+            "clicks": 5,
+            "spend": 33.39,
+            "ctr_pct": 0.0292,
+            "vcr_pct": null
+        },
+        {
+            "day": "Tuesday",
+            "impressions": 13431,
+            "clicks": 7,
+            "spend": 25.97,
+            "ctr_pct": 0.0521,
+            "vcr_pct": null
+        },
+        {
+            "day": "Wednesday",
+            "impressions": 10310,
+            "clicks": 3,
+            "spend": 19.74,
+            "ctr_pct": 0.0291,
+            "vcr_pct": null
+        },
+        {
+            "day": "Thursday",
+            "impressions": 12506,
+            "clicks": 5,
+            "spend": 24.25,
+            "ctr_pct": 0.04,
+            "vcr_pct": null
+        },
+        {
+            "day": "Friday",
+            "impressions": 10135,
+            "clicks": 2,
+            "spend": 19.5,
+            "ctr_pct": 0.0197,
+            "vcr_pct": null
+        },
+        {
+            "day": "Saturday",
+            "impressions": 19106,
+            "clicks": 7,
+            "spend": 37.52,
+            "ctr_pct": 0.0366,
+            "vcr_pct": null
+        },
+        {
+            "day": "Sunday",
+            "impressions": 9128,
+            "clicks": 2,
+            "spend": 17.72,
+            "ctr_pct": 0.0219,
+            "vcr_pct": null
+        }
+    ],
+    "top_domains": [
+        {
+            "domain": "blog.smart-trends-site.com",
+            "impressions": 16313,
+            "impression_share_pct": 17.78,
+            "ctr_pct": 0.0245,
+            "vcr_pct": null,
+            "cpm": 2.0,
+            "viewability_pct": 66.8,
+            "is_underperforming": false
+        },
+        {
+            "domain": "blog.pure-insight-spot.com",
+            "impressions": 7272,
+            "impression_share_pct": 7.93,
+            "ctr_pct": 0.0138,
+            "vcr_pct": null,
+            "cpm": 2.0,
+            "viewability_pct": 76.88,
+            "is_underperforming": false
+        },
+        {
+            "domain": "blog.situations-and-stories.com",
+            "impressions": 6377,
+            "impression_share_pct": 6.95,
+            "ctr_pct": 0.047,
+            "vcr_pct": null,
+            "cpm": 2.0,
+            "viewability_pct": 65.64,
+            "is_underperforming": false
+        },
+        {
+            "domain": "discover.smart-trends-site.com",
+            "impressions": 5529,
+            "impression_share_pct": 6.03,
+            "ctr_pct": 0.0543,
+            "vcr_pct": null,
+            "cpm": 2.0,
+            "viewability_pct": 75.51,
+            "is_underperforming": false
+        },
+        {
+            "domain": "www.pure-insight-spot.com",
+            "impressions": 4989,
+            "impression_share_pct": 5.44,
+            "ctr_pct": 0.02,
+            "vcr_pct": null,
+            "cpm": 1.99,
+            "viewability_pct": 66.29,
+            "is_underperforming": false
+        },
+        {
+            "domain": "content.story-feeds.com",
+            "impressions": 4422,
+            "impression_share_pct": 4.82,
+            "ctr_pct": 0.1357,
+            "vcr_pct": null,
+            "cpm": 2.0,
+            "viewability_pct": 83.02,
+            "is_underperforming": false
+        },
+        {
+            "domain": "m.soundcloud.com",
+            "impressions": 3487,
+            "impression_share_pct": 3.8,
+            "ctr_pct": null,
+            "vcr_pct": null,
+            "cpm": 2.0,
+            "viewability_pct": 27.9,
+            "is_underperforming": false
+        },
+        {
+            "domain": "blog.smart-update-hq.com",
+            "impressions": 3280,
+            "impression_share_pct": 3.58,
+            "ctr_pct": 0.0305,
+            "vcr_pct": null,
+            "cpm": 2.0,
+            "viewability_pct": 74.76,
+            "is_underperforming": false
+        },
+        {
+            "domain": "finance.smart-update-hq.com",
+            "impressions": 2353,
+            "impression_share_pct": 2.57,
+            "ctr_pct": null,
+            "vcr_pct": null,
+            "cpm": 2.0,
+            "viewability_pct": 75.78,
+            "is_underperforming": false
+        },
+        {
+            "domain": "forum.huskermax.com",
+            "impressions": 1808,
+            "impression_share_pct": 1.97,
+            "ctr_pct": null,
+            "vcr_pct": null,
+            "cpm": 1.96,
+            "viewability_pct": 62.72,
+            "is_underperforming": false
+        }
+    ],
+    "top_10_domain_share_pct": 60.87
+}

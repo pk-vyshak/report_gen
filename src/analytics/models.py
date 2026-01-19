@@ -15,6 +15,8 @@ class WeeklyStats:
     spend: float
     avg_ctr: float
     avg_cpm: float
+    avg_vcr: float | None = None
+    avg_viewability: float | None = None
 
 
 @dataclass(frozen=True)
@@ -128,3 +130,44 @@ class DeliveryPattern:
     last_quarter_delivery_pct: float  # Impressions in last 25% of time
     threshold_used: float  # Default 0.40
     daily_trend: Literal["increasing", "decreasing", "stable"]
+
+
+@dataclass(frozen=True)
+class CampaignKPIs:
+    """Campaign-level KPIs (recomputed from raw data)."""
+
+    total_impressions: int
+    total_clicks: int
+    total_spend: float
+    ctr: float  # clicks / impressions
+    cpm: float  # (spend / impressions) * 1000
+    viewability_pct: float  # viewable_impressions / impressions
+    vcr_pct: float | None  # weighted VCR
+
+
+@dataclass(frozen=True)
+class DayOfWeekStats:
+    """Performance metrics for a single day of week."""
+
+    day_of_week: str
+    impressions: int
+    clicks: int
+    spend: float
+    avg_ctr: float
+    avg_vcr: float | None
+
+
+@dataclass(frozen=True)
+class DomainStats:
+    """Enhanced domain stats with share calculations."""
+
+    domain: str
+    impressions: int
+    clicks: int
+    spend: float
+    avg_ctr: float
+    avg_cpm: float
+    avg_vcr: float | None
+    avg_viewability: float | None
+    impression_share: float  # domain_impressions / total_impressions
+    is_underperforming: bool  # high share + low metrics
