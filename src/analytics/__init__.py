@@ -1,6 +1,7 @@
 """Analytics module for ad campaign data analysis."""
 
 from .calculator import AnalyticalEngine
+from .insights import Insight, InsightEngine, InsightThresholds, Severity
 from .models import (
     Anomaly,
     AnomalyReport,
@@ -29,8 +30,12 @@ __all__ = [
     "DomainStats",
     "EfficiencyMetrics",
     "GoalProgress",
+    "Insight",
+    "InsightEngine",
+    "InsightThresholds",
     "PerformanceGap",
     "PlatformPerformance",
+    "Severity",
     "TemporalStats",
     "WeeklyStats",
     "WeekOverWeekChange",

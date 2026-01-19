@@ -1,12 +1,20 @@
 """Report service - orchestrates data ingestion and analytics."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import polars as pl
 
-from ..analytics import AnalyticalEngine, CampaignKPIs, DayOfWeekStats, DomainStats
+from ..analytics import (
+    AnalyticalEngine,
+    CampaignKPIs,
+    DayOfWeekStats,
+    DomainStats,
+    Insight,
+    InsightEngine,
+    InsightThresholds,
+)
 from ..ingestion import DataIngestionPipeline
 from ..models.stat_pack import StatPack
 
@@ -24,7 +32,8 @@ class ReportOutput:
     dow_performance: list[DayOfWeekStats]
     top_domains: list[DomainStats]
     top_n_domain_share: float
-    stat_pack: StatPack
+    insights: list[Insight] = field(default_factory=list)
+    stat_pack: StatPack | None = None
 
 
 class ReportService:
@@ -123,6 +132,10 @@ class ReportService:
         platform_stats = engine.get_platform_stats()
         stat_pack = engine.get_stat_pack()
 
+        # Generate rule-based insights
+        insight_engine = InsightEngine(domain_df, InsightThresholds())
+        insights = insight_engine.generate_all_insights()
+
         # Build weekly performance output
         weekly_performance = [
             {
@@ -169,6 +182,7 @@ class ReportService:
             dow_performance=dow_stats,
             top_domains=top_domains,
             top_n_domain_share=top_n_share,
+            insights=insights,
             stat_pack=stat_pack,
         )
 
@@ -241,4 +255,14 @@ class ReportService:
                 for d in output.top_domains
             ],
             "top_10_domain_share_pct": round(output.top_n_domain_share * 100, 2),
+            "insights": [
+                {
+                    "rule_id": i.rule_id,
+                    "description": i.description,
+                    "severity": i.severity.value,
+                    "recommendation": i.recommendation,
+                    "metrics": i.metrics,
+                }
+                for i in output.insights
+            ],
         }
