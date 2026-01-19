@@ -72,8 +72,110 @@ def render_insight(insight: dict) -> None:
     )
 
 
+def create_weekly_trend_chart(weekly_data: list) -> go.Figure:
+    """Create weekly trend chart with impressions and CTR."""
+    fig = go.Figure()
+
+    fig.add_trace(go.Bar(
+        x=[w["week"] for w in weekly_data],
+        y=[w["impressions"] for w in weekly_data],
+        name="Impressions",
+        marker_color="#667eea",
+        yaxis="y",
+    ))
+
+    fig.add_trace(go.Scatter(
+        x=[w["week"] for w in weekly_data],
+        y=[w["ctr"] if w["ctr"] else 0 for w in weekly_data],
+        name="CTR (%)",
+        yaxis="y2",
+        mode="lines+markers",
+        line=dict(color="#dc3545", width=3),
+        marker=dict(size=8),
+    ))
+
+    fig.update_layout(
+        title="Weekly Performance Trend",
+        yaxis=dict(title="Impressions", side="left", showgrid=True),
+        yaxis2=dict(title="CTR (%)", side="right", overlaying="y", showgrid=False),
+        legend=dict(x=0, y=1.15, orientation="h"),
+        height=400,
+        width=800,
+        plot_bgcolor="white",
+    )
+
+    return fig
+
+
+def create_platform_pie(platform_data: list) -> go.Figure:
+    """Create platform impression share pie chart."""
+    colors = ["#667eea", "#764ba2", "#f093fb", "#f5576c", "#4facfe"]
+
+    fig = go.Figure(data=[go.Pie(
+        labels=[p["platform"] for p in platform_data],
+        values=[p["impressions"] for p in platform_data],
+        hole=0.4,
+        marker_colors=colors[:len(platform_data)],
+    )])
+
+    fig.update_layout(
+        title="Platform Impression Share",
+        height=400,
+        width=500,
+    )
+
+    return fig
+
+
+def create_dow_chart(dow_data: list) -> go.Figure:
+    """Create day-of-week bar chart."""
+    fig = go.Figure(data=[go.Bar(
+        x=[d["day"] for d in dow_data],
+        y=[d["impressions"] for d in dow_data],
+        marker_color="#764ba2",
+    )])
+
+    fig.update_layout(
+        title="Day-of-Week Impressions",
+        xaxis_title="Day",
+        yaxis_title="Impressions",
+        height=350,
+        width=500,
+        plot_bgcolor="white",
+    )
+
+    return fig
+
+
+def create_domain_pie(domain_data: list) -> go.Figure:
+    """Create top domains pie chart."""
+    colors = ["#667eea", "#764ba2", "#f093fb", "#f5576c", "#4facfe"]
+    top5 = domain_data[:5]
+
+    fig = go.Figure(data=[go.Pie(
+        labels=[d["domain"][:25] + "..." if len(d["domain"]) > 25 else d["domain"] for d in top5],
+        values=[d["impressions"] for d in top5],
+        hole=0.4,
+        marker_colors=colors,
+    )])
+
+    fig.update_layout(
+        title="Top 5 Domains",
+        height=400,
+        width=500,
+    )
+
+    return fig
+
+
+def fig_to_image(fig: go.Figure) -> BytesIO:
+    """Convert Plotly figure to PNG image bytes."""
+    img_bytes = fig.to_image(format="png", scale=2)
+    return BytesIO(img_bytes)
+
+
 def generate_docx(output, summary: dict) -> BytesIO:
-    """Generate DOCX report from output."""
+    """Generate DOCX report with charts and tables."""
     doc = Document()
 
     # Title
@@ -116,58 +218,127 @@ def generate_docx(output, summary: dict) -> BytesIO:
 
     # Key Insights
     doc.add_heading("Key Insights", level=1)
-    for insight in summary.get("insights", []):
-        severity_label = {"green": "✓", "amber": "⚠", "red": "✗"}[insight["severity"]]
-        p = doc.add_paragraph()
-        p.add_run(f"[{severity_label}] ").bold = True
-        p.add_run(insight["description"])
-        doc.add_paragraph(f"    Recommendation: {insight['recommendation']}")
+    insights = summary.get("insights", [])
 
-    # Weekly Performance
+    # Group by severity
+    for severity, label in [("red", "Critical"), ("amber", "Warning"), ("green", "Positive")]:
+        severity_insights = [i for i in insights if i["severity"] == severity]
+        if severity_insights:
+            doc.add_heading(f"{label} Findings", level=2)
+            for insight in severity_insights:
+                icon = {"green": "✓", "amber": "⚠", "red": "✗"}[severity]
+                p = doc.add_paragraph()
+                p.add_run(f"[{icon}] ").bold = True
+                p.add_run(insight["description"])
+                rec = doc.add_paragraph(f"    → {insight['recommendation']}")
+                rec.paragraph_format.left_indent = Inches(0.5)
+
+    # Weekly Performance with Chart
     doc.add_heading("Weekly Performance", level=1)
-    table = doc.add_table(rows=1, cols=5)
-    table.style = "Table Grid"
-    hdr = table.rows[0].cells
-    for i, h in enumerate(["Week", "Impressions", "Clicks", "CTR", "Spend"]):
-        hdr[i].text = h
 
-    for w in summary["weekly_performance"]:
-        row = table.add_row().cells
-        row[0].text = w["week"]
-        row[1].text = format_number(w["impressions"])
-        row[2].text = format_number(w["clicks"])
-        row[3].text = format_pct(w["ctr"])
-        row[4].text = f"${format_number(w['spend'], 2)}"
+    weekly_data = summary["weekly_performance"]
+    if weekly_data:
+        # Add chart
+        fig = create_weekly_trend_chart(weekly_data)
+        img_stream = fig_to_image(fig)
+        doc.add_picture(img_stream, width=Inches(6))
 
-    # Platform Breakdown
+        doc.add_paragraph()  # Spacing
+
+        # Add table
+        table = doc.add_table(rows=1, cols=6)
+        table.style = "Table Grid"
+        hdr = table.rows[0].cells
+        for i, h in enumerate(["Week", "Impressions", "Clicks", "CTR", "Spend", "Viewability"]):
+            hdr[i].text = h
+
+        for w in weekly_data:
+            row = table.add_row().cells
+            row[0].text = w["week"]
+            row[1].text = format_number(w["impressions"])
+            row[2].text = format_number(w["clicks"])
+            row[3].text = format_pct(w["ctr"])
+            row[4].text = f"${format_number(w['spend'], 2)}"
+            row[5].text = format_pct(w.get("viewability"))
+
+    # Platform Breakdown with Chart
     doc.add_heading("Platform Breakdown", level=1)
-    table = doc.add_table(rows=1, cols=4)
-    table.style = "Table Grid"
-    hdr = table.rows[0].cells
-    for i, h in enumerate(["Platform", "Impressions", "Share", "CTR"]):
-        hdr[i].text = h
 
-    for p in summary["platform_breakdown"]:
-        row = table.add_row().cells
-        row[0].text = p["platform"]
-        row[1].text = format_number(p["impressions"])
-        row[2].text = f"{p['impression_share']}%"
-        row[3].text = format_pct(p["ctr"])
+    platform_data = summary["platform_breakdown"]
+    if platform_data:
+        # Add chart
+        fig = create_platform_pie(platform_data)
+        img_stream = fig_to_image(fig)
+        doc.add_picture(img_stream, width=Inches(4))
 
-    # Top Domains
+        doc.add_paragraph()
+
+        # Add table
+        table = doc.add_table(rows=1, cols=5)
+        table.style = "Table Grid"
+        hdr = table.rows[0].cells
+        for i, h in enumerate(["Platform", "Impressions", "Share", "CTR", "CPM"]):
+            hdr[i].text = h
+
+        for p in platform_data:
+            row = table.add_row().cells
+            row[0].text = p["platform"]
+            row[1].text = format_number(p["impressions"])
+            row[2].text = f"{p['impression_share']}%"
+            row[3].text = format_pct(p["ctr"])
+            row[4].text = f"${p['cpm']}" if p.get("cpm") else "N/A"
+
+    # Day of Week Analysis with Chart
+    doc.add_heading("Day of Week Analysis", level=1)
+
+    dow_data = summary.get("day_of_week_performance", [])
+    if dow_data:
+        fig = create_dow_chart(dow_data)
+        img_stream = fig_to_image(fig)
+        doc.add_picture(img_stream, width=Inches(5))
+
+        doc.add_paragraph()
+
+        table = doc.add_table(rows=1, cols=4)
+        table.style = "Table Grid"
+        hdr = table.rows[0].cells
+        for i, h in enumerate(["Day", "Impressions", "Clicks", "CTR"]):
+            hdr[i].text = h
+
+        for d in dow_data:
+            row = table.add_row().cells
+            row[0].text = d["day"]
+            row[1].text = format_number(d["impressions"])
+            row[2].text = format_number(d["clicks"])
+            row[3].text = format_pct(d["ctr_pct"])
+
+    # Top Domains with Chart
     doc.add_heading("Top Domains", level=1)
-    table = doc.add_table(rows=1, cols=4)
-    table.style = "Table Grid"
-    hdr = table.rows[0].cells
-    for i, h in enumerate(["Domain", "Impressions", "Share", "CTR"]):
-        hdr[i].text = h
 
-    for d in summary["top_domains"][:10]:
-        row = table.add_row().cells
-        row[0].text = d["domain"]
-        row[1].text = format_number(d["impressions"])
-        row[2].text = f"{d['impression_share_pct']}%"
-        row[3].text = format_pct(d["ctr_pct"])
+    domain_data = summary["top_domains"]
+    if domain_data:
+        # Add chart
+        fig = create_domain_pie(domain_data)
+        img_stream = fig_to_image(fig)
+        doc.add_picture(img_stream, width=Inches(4))
+
+        doc.add_paragraph()
+        doc.add_paragraph(f"Top 10 Domain Share: {summary['top_10_domain_share_pct']}%")
+
+        # Add table
+        table = doc.add_table(rows=1, cols=5)
+        table.style = "Table Grid"
+        hdr = table.rows[0].cells
+        for i, h in enumerate(["Domain", "Impressions", "Share", "CTR", "Status"]):
+            hdr[i].text = h
+
+        for d in domain_data[:10]:
+            row = table.add_row().cells
+            row[0].text = d["domain"][:40]  # Truncate long domains
+            row[1].text = format_number(d["impressions"])
+            row[2].text = f"{d['impression_share_pct']}%"
+            row[3].text = format_pct(d["ctr_pct"])
+            row[4].text = "⚠ Underperforming" if d.get("is_underperforming") else "OK"
 
     # Save to BytesIO
     buffer = BytesIO()
