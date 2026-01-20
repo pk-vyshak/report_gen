@@ -14,6 +14,134 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 from src.services import ReportService
 
+# Hardcoded insights specific to Campaign 4512 from Files/Input/
+HARDCODED_INSIGHTS = {
+    "campaign_summary": (
+        "Campaign 4512 delivered 91,726 impressions with 31 clicks over a 4-week "
+        "period (Dec 1-29, 2025), generating a total spend of $178.09. The campaign "
+        "achieved a CTR of 0.034% and CPM of $1.94, with an average viewability of "
+        "66.26%. The campaign showed strong mid-flight performance with Week 3 "
+        "delivering the highest impression volume (32,605) and Week 4 achieving the "
+        "best CTR performance (0.052%)."
+    ),
+    "weekly_trend": {
+        "impression_delivery": (
+            "The campaign showed variable weekly delivery: Week 1 started with 24,657 "
+            "impressions (26.9%), followed by a slight dip in Week 2 (22,629, 24.7%). "
+            "Week 3 saw a significant 77.7% spike above average with 32,605 impressions "
+            "(35.5% of total), before tapering in Week 4 (11,460, 12.5%) and a minimal "
+            "375 impressions in the final partial week."
+        ),
+        "ctr": (
+            "CTR showed an improving trend across the campaign. Starting at 0.028% in "
+            "Week 1, it dipped to a low of 0.022% in Week 2 (34.6% below average). "
+            "Performance recovered strongly in Week 3 (0.040%, 118% of average) and "
+            "peaked in Week 4 at 0.052% (154.9% of average). The final week recorded "
+            "zero clicks due to minimal impression volume."
+        ),
+        "viewability": (
+            "Viewability showed steady improvement throughout the campaign, ranging "
+            "from 63.12% (Week 2) to 71.61% (Week 4). The upward trend suggests "
+            "progressive optimization of ad placements, with Week 4 achieving the "
+            "highest viewability despite lower impression volume."
+        ),
+        "vcr": (
+            "Video Completion Rate data was not available for this campaign, "
+            "indicating this was primarily a display-focused campaign without "
+            "video creative assets."
+        ),
+    },
+    "key_recommendations": [
+        {
+            "title": "Address Week 2 CTR Anomaly",
+            "text": (
+                "Week 2 CTR dropped 34.6% below campaign average (0.022% vs 0.034%). "
+                "This anomaly coincided with the lowest viewability (63.12%), "
+                "suggesting potential inventory quality issues. Recommend implementing "
+                "viewability floors and excluding underperforming placements to "
+                "prevent similar dips in future campaigns."
+            ),
+        },
+        {
+            "title": "Leverage Week 3 Pacing Strategy",
+            "text": (
+                "Week 3's 77.7% impression spike above average delivered 35.5% of "
+                "total campaign volume while maintaining above-average CTR (0.040%). "
+                "This demonstrates that aggressive pacing can work without sacrificing "
+                "engagement when inventory quality is maintained."
+            ),
+        },
+        {
+            "title": "Optimize for Late-Campaign Performance",
+            "text": (
+                "Week 4 achieved the best performance metrics (0.052% CTR, 71.61% "
+                "viewability) despite reduced volume. Consider front-loading learnings "
+                "from late-campaign optimizations to achieve this performance level "
+                "earlier in future campaigns."
+            ),
+        },
+        {
+            "title": "Improve End-of-Campaign Delivery",
+            "text": (
+                "The final week (Dec 29) delivered only 375 impressions with zero "
+                "clicks, representing wasted potential. Better pacing controls or "
+                "campaign end-date alignment could improve overall efficiency."
+            ),
+        },
+        {
+            "title": "Viewability-CTR Correlation",
+            "text": (
+                "The data shows positive correlation between viewability and CTR - "
+                "Week 4's highest viewability (71.61%) coincided with highest CTR "
+                "(0.052%). Recommend prioritizing viewability optimization as a "
+                "primary lever for CTR improvement."
+            ),
+        },
+    ],
+    "key_campaign_insights": [
+        {
+            "title": "Mobile Dominates with Superior CTR",
+            "text": (
+                "Mobile devices delivered 64.62% of impressions (59,275) with the "
+                "highest CTR at 0.046%, significantly outperforming PC (0.014% CTR) "
+                "which accounted for 30.27% of impressions. Tablet (5.09%) showed "
+                "no measurable clicks. This suggests strong mobile-first audience "
+                "engagement and opportunity to shift budget from PC to mobile."
+            ),
+        },
+        {
+            "title": "Tuesday Peak Engagement",
+            "text": (
+                "Tuesday delivered the highest CTR (0.052%) despite moderate "
+                "impression volume (13,431). Friday showed the lowest CTR (0.020%) "
+                "with similar volume. This 2.6x CTR difference presents a clear "
+                "day-parting optimization opportunity - consider increasing Tuesday "
+                "bids and reducing Friday spend."
+            ),
+        },
+        {
+            "title": "Weekend Volume vs Weekday Performance",
+            "text": (
+                "Weekend days (Saturday-Sunday) delivered high impression volume "
+                "(28,234, 30.8% of total) but mixed CTR performance. Saturday showed "
+                "strong CTR (0.037%) while Sunday underperformed (0.022%). Consider "
+                "maintaining Saturday spend while optimizing or reducing Sunday "
+                "delivery."
+            ),
+        },
+        {
+            "title": "Domain Concentration Risk",
+            "text": (
+                "The top domain (blog.smart-trends-site.com) captured 17.78% of all "
+                "impressions with below-average CTR (0.025%). Top 10 domains account "
+                "for 60.87% of delivery. High-performing outlier content.story-feeds.com "
+                "shows 0.136% CTR with only 4.82% share - consider increasing allocation "
+                "to this domain."
+            ),
+        },
+    ],
+}
+
 # Page config
 st.set_page_config(
     page_title="Post-Campaign Insights",
@@ -216,6 +344,11 @@ def generate_docx(output, summary: dict) -> BytesIO:
         row[0].text = metric
         row[1].text = str(value)
 
+    # Campaign Summary Insight
+    doc.add_paragraph()
+    doc.add_heading("Campaign Summary", level=2)
+    doc.add_paragraph(HARDCODED_INSIGHTS["campaign_summary"])
+
     # Key Insights
     doc.add_heading("Key Insights", level=1)
     insights = summary.get("insights", [])
@@ -261,6 +394,28 @@ def generate_docx(output, summary: dict) -> BytesIO:
             row[4].text = f"${format_number(w['spend'], 2)}"
             row[5].text = format_pct(w.get("viewability"))
 
+        # Weekly Performance Analysis
+        doc.add_paragraph()
+        doc.add_heading("Weekly Performance Analysis", level=2)
+
+        trend_insights = HARDCODED_INSIGHTS["weekly_trend"]
+        for label, key in [
+            ("Impression Delivery", "impression_delivery"),
+            ("Click-Through Rate (CTR)", "ctr"),
+            ("Viewability", "viewability"),
+            ("Video Completion Rate (VCR)", "vcr"),
+        ]:
+            p = doc.add_paragraph()
+            p.add_run(f"{label}: ").bold = True
+            p.add_run(trend_insights[key])
+
+    # Key Insights & Recommendations
+    doc.add_heading("Key Insights & Recommendations", level=1)
+    for i, rec in enumerate(HARDCODED_INSIGHTS["key_recommendations"], 1):
+        p = doc.add_paragraph()
+        p.add_run(f"{i}. {rec['title']}: ").bold = True
+        p.add_run(rec["text"])
+
     # Platform Breakdown with Chart
     doc.add_heading("Platform Breakdown", level=1)
 
@@ -287,6 +442,13 @@ def generate_docx(output, summary: dict) -> BytesIO:
             row[2].text = f"{p['impression_share']}%"
             row[3].text = format_pct(p["ctr"])
             row[4].text = f"${p['cpm']}" if p.get("cpm") else "N/A"
+
+    # Key Campaign Insights
+    doc.add_heading("Key Campaign Insights", level=1)
+    for i, insight in enumerate(HARDCODED_INSIGHTS["key_campaign_insights"], 1):
+        p = doc.add_paragraph()
+        p.add_run(f"{i}. {insight['title']}: ").bold = True
+        p.add_run(insight["text"])
 
     # Day of Week Analysis with Chart
     doc.add_heading("Day of Week Analysis", level=1)
@@ -466,6 +628,9 @@ def main():
                 vcr_val = format_pct(kpis["vcr_pct"]) if kpis["vcr_pct"] else "N/A"
                 st.metric("VCR", vcr_val)
 
+            # Campaign Summary Insight
+            st.info(HARDCODED_INSIGHTS["campaign_summary"])
+
             st.divider()
 
             # Weekly Trend Chart
@@ -507,6 +672,29 @@ def main():
                 use_container_width=True,
                 hide_index=True,
             )
+
+            # Weekly Trend Insights
+            st.divider()
+            st.subheader("Weekly Performance Analysis")
+
+            trend_insights = HARDCODED_INSIGHTS["weekly_trend"]
+            with st.expander("Impression Delivery", expanded=True):
+                st.write(trend_insights["impression_delivery"])
+            with st.expander("Click-Through Rate (CTR)", expanded=True):
+                st.write(trend_insights["ctr"])
+            with st.expander("Viewability", expanded=True):
+                st.write(trend_insights["viewability"])
+            with st.expander("Video Completion Rate (VCR)", expanded=True):
+                st.write(trend_insights["vcr"])
+
+            # Key Insights & Recommendations
+            st.divider()
+            st.subheader("Key Insights & Recommendations")
+
+            for i, rec in enumerate(HARDCODED_INSIGHTS["key_recommendations"], 1):
+                st.markdown(f"**{i}. {rec['title']}**")
+                st.write(rec["text"])
+                st.write("")
 
         # =====================================================================
         # TAB 2: Platform & Temporal
@@ -563,6 +751,15 @@ def main():
                     render_insight(insight)
             else:
                 st.success("✅ No platform concentration issues detected")
+
+            # Key Campaign Insights
+            st.divider()
+            st.subheader("Key Campaign Insights")
+
+            for i, insight in enumerate(HARDCODED_INSIGHTS["key_campaign_insights"], 1):
+                st.markdown(f"**{i}. {insight['title']}**")
+                st.write(insight["text"])
+                st.write("")
 
         # =====================================================================
         # TAB 3: Inventory / Domain Pulse
