@@ -60,3 +60,111 @@ src/
 ```bash
 streamlit run app.py
 ```
+
+
+### Calculations
+
+## Calculations Rundown
+
+### Campaign Total KPIs (Recomputed from raw data)
+
+|     Metric      |                   Formula                       |        Note         |
+|-----------------|-------------------------------------------------|---------------------|
+| **Impressions** | `sum(impressions)`                              | Raw sum             |
+| **Clicks**      | `sum(clicks)`                                   | Raw sum             |
+| **Spend**       | `sum(spend)`                                    | Raw sum             |
+| **CTR**         | `sum(clicks) / sum(impressions)`                | Not averaged!       |
+| **CPM**         | `(sum(spend) / sum(impressions)) × 1000`        | Cost per mille      |
+| **Viewability** | `sum(viewable_impressions) / sum(impressions)`  | Weighted            |
+| **VCR**         | `sum(vcr_pct × impressions) / sum(impressions)` | Weighted by volume  |-------------------------------------------------------------------------------------------
+
+### Weekly Performance (Per week_start)
+
+```
+GROUP BY week_start:
+  impressions     = sum(impressions)
+  clicks          = sum(clicks)
+  spend           = sum(spend)
+  CTR             = sum(clicks) / sum(impressions)
+  CPM             = (sum(spend) / sum(impressions)) × 1000
+  VCR             = sum(vcr_pct × impressions) / sum(impressions)
+  Viewability     = sum(viewable_impressions) / sum(impressions)
+```
+
+**Week-over-Week Change:**
+```
+WoW % = (current_week - previous_week) / previous_week × 100
+```
+---
+
+### Platform/Device Breakdown (Per platform_device_type)
+
+```
+GROUP BY platform_device_type:
+  impressions       = sum(impressions)
+  clicks            = sum(clicks)
+  spend             = sum(spend)
+  impression_share  = platform_impressions / total_impressions
+  CTR               = sum(clicks) / sum(impressions)
+  CPM               = (sum(spend) / sum(impressions)) × 1000
+  VCR               = sum(vcr_pct × impressions) / sum(impressions)
+```
+---
+
+### Day-of-Week Performance (Per day_of_week)
+
+```
+GROUP BY day_of_week:  # Monday → Sunday
+  impressions  = sum(impressions)
+  clicks       = sum(clicks)
+  spend        = sum(spend)
+  CTR          = sum(clicks) / sum(impressions)
+  VCR          = sum(vcr_pct × impressions) / sum(impressions)
+```
+
+---
+
+### Top Domains (Per domain)
+
+```
+GROUP BY domain:
+  impressions       = sum(impressions)
+  clicks            = sum(clicks)
+  spend             = sum(spend)
+  CTR               = sum(clicks) / sum(impressions)
+  CPM               = (sum(spend) / sum(impressions)) × 1000
+  VCR               = sum(vcr_pct × impressions) / sum(impressions)
+  Viewability       = sum(viewable_impressions) / sum(impressions)
+  impression_share  = domain_impressions / total_impressions
+
+Top-N Share = sum(top_N_domain_impressions) / total_impressions
+```
+
+**Underperforming Flag:**
+```python
+is_underperforming = (
+    impression_share >= 5%  AND
+    CTR < 25th_percentile_CTR
+)
+```
+
+---
+
+### Insight Rule Calculations
+
+|         Rule                 |                     Calculation                     |
+|------------------------------|-----------------------------------------------------|
+| **Pacing Spike**             | `week_imps >= avg_weekly_imps × 1.5`                |
+| **CTR Anomaly**              | `week_CTR <= campaign_CTR × 0.70`                   |
+| **CTR Recovery**             | `week_CTR >= campaign_CTR × 1.10` (later half only) |
+| **VCR Drop**                 | `prev_week_VCR - curr_week_VCR >= 0.03` (3 pp)      |
+| **Platform Concentration**   | `platform_share >= 80%`                             |
+| **Top Domain Concentration** | `top1_share >= 40%`                                 |
+| **Top-5 Concentration**      | `top5_share >= 70%`                                 |
+
+---
+
+### Key Principle
+
+> **All rollup metrics are RECOMPUTED** from raw row-level data.  
+> Excel pre-aggregated values are ignored to ensure accuracy.
